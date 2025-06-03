@@ -3,26 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <title>Codex Hermético</title>
+  <style>
+    body {
+      background: #0a0a14;
+      color: white;
+      font-family: 'Cinzel', serif;
+      text-align: center;
+      padding: 2rem;
+    }
+  </style>
 </head>
 <body>
   <h1>Bienvenido al Codex Hermético</h1>
-  <p>ID de experiencia: <span id="id"></span></p>
-  <div id="info"></div>
+  <p><strong>ID de experiencia:</strong> <span id="experience-id">Cargando...</span></p>
+  <p><strong>Usuario:</strong> <span id="user-name">Consultando...</span></p>
 
   <script>
-    const experienceId = window.location.pathname.split("/").pop();
-    document.getElementById("id").innerText = experienceId;
+    const pathParts = window.location.pathname.split('/');
+    const experienceId = pathParts[pathParts.length - 1];
+    document.getElementById('experience-id').textContent = experienceId;
 
     fetch(`/api/experience?experienceId=${experienceId}`)
       .then(res => res.json())
       .then(data => {
-        document.getElementById("info").innerHTML = `
-          <p><strong>Nombre:</strong> ${data.membership.user.firstName || "Sin nombre"}</p>
-          <p><strong>Email:</strong> ${data.membership.user.email}</p>
-        `;
+        document.getElementById('user-name').textContent = data?.customer?.name || 'Desconocido';
       })
       .catch(err => {
-        console.error("Error al obtener datos de Whop:", err);
+        console.error(err);
+        document.getElementById('user-name').textContent = 'Error';
       });
   </script>
 </body>
