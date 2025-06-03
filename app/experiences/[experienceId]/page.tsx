@@ -75,7 +75,7 @@ export default async function ExperiencePage({
     try {
       const res = await fetch(`https://api.whop.com/v2/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
+          Authorization: `Bearer ${process.env.WHOP_API_KEY_V2}`,
         },
       });
 
