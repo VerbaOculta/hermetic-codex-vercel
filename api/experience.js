@@ -1,26 +1,21 @@
 export default async function handler(req, res) {
-  const experienceId = req.query.id;
+  const { id } = req.query;
 
-  if (!experienceId) {
-    return res.status(400).json({ error: "Missing experience ID" });
+  if (!id) {
+    return res.status(400).json({ error: 'Missing experience ID' });
   }
 
   const query = `
-    query GetExperience($id: ID!) {
-      experience(id: $id) {
+    query {
+      experience(id: "${id}") {
         id
         buyer {
           id
           email
-          name
         }
         plan {
-          id
           name
         }
-        created_at
-        expires_at
-        metadata
       }
     }
   `;
@@ -32,22 +27,17 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${process.env.WHOP_API_KEY}`
       },
-      body: JSON.stringify({
-        query,
-        variables: { id: experienceId }
-      }),
+      body: JSON.stringify({ query }),
     });
 
-    const result = await response.json();
+    const json = await response.json();
 
-    if (!result.data || !result.data.experience) {
-      console.error("Whop API error:", result.errors || result);
-      return res.status(404).json({ error: "Experience not found or invalid ID" });
+    if (json.errors) {
+      return res.status(404).json({ error: json.errors[0].message });
     }
 
-    res.status(200).json(result.data.experience);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(200).json(json.data.experience);
+  } catch (error) {
+    res.status(500).json({ error: "Internal error", details: error.message });
   }
 }
