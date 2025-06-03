@@ -2,18 +2,8 @@
   "name": "codex-whop-app",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "start": "serve public -l 3000",
-    "proxy": "whop-proxy",
-    "dev": "concurrently -k -n \"WEB,PROXY\" -c green,blue \"pnpm run start\" \"pnpm run proxy\""
-  },
   "dependencies": {
-    "concurrently": "^8.2.0",
-    "serve": "^14.2.0",
     "node-fetch": "^3.3.2"
-  },
-  "devDependencies": {
-    "@whop-apps/dev-proxy": "0.0.1-canary.116"
   },
   "packageManager": "pnpm@10.11.1"
 }
