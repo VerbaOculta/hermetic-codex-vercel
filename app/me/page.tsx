@@ -1,9 +1,9 @@
-
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-export default function MePage() {
-  const jwtToken = cookies().get("whop_jwt")?.value;
+export default async function MePage() {
+  const allCookies = cookies();
+  const jwtToken = allCookies.get("whop_jwt")?.value;
 
   if (!jwtToken) {
     return (
@@ -17,7 +17,7 @@ export default function MePage() {
   let decoded = null;
   try {
     decoded = jwt.decode(jwtToken);
-  } catch (err) {
+  } catch (err: any) {
     return (
       <main style={{ padding: "2rem" }}>
         <h1>Error al decodificar JWT</h1>
