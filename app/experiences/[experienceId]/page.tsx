@@ -7,31 +7,28 @@ export default async function ExperiencePage({
 }: {
   params: Promise<{ experienceId: string }>;
 }) {
-  // 1. Obtener headers y extraer el token
   const headersList = await headers();
   const authHeader = headersList.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
 
-  // 2. Obtener experienceId del path
   const { experienceId } = await params;
-
-  // 3. Verificar token (para obtener userId)
   const { userId } = await verifyUserToken(headersList);
 
-  // 4. Validar acceso
   const result = await whopApi.checkIfUserHasAccessToExperience({
     userId,
     experienceId,
   });
 
-  // 5. Obtener datos públicos del usuario y experiencia
   const user = (await whopApi.getUser({ userId })).publicUser;
   const experience = (await whopApi.getExperience({ experienceId })).experience;
   const { accessLevel } = result.hasAccessToExperience;
 
-  // 6. Obtener correo vía GraphQL
+  // === MÉTODO 1: GRAPHQL con token del usuario ===
   let email = "not_found";
+
   if (token) {
+    console.log("[WHOP] Token de usuario:", token);
+
     const gqlQuery = {
       query: `
         query {
@@ -54,14 +51,39 @@ export default async function ExperiencePage({
         body: JSON.stringify(gqlQuery),
       });
 
+      console.log("[WHOP] Status respuesta GraphQL:", res.status);
+
       const data = await res.json();
+      console.log("[WHOP] Datos GraphQL:", JSON.stringify(data, null, 2));
+
       email = data?.data?.viewer?.user?.email || "not_found";
     } catch (err) {
-      console.error("Error fetching email from GraphQL", err);
+      console.error("[WHOP] Error en GraphQL con token de usuario:", err);
+    }
+  } else {
+    console.warn("[WHOP] Token de usuario no encontrado en headers.");
+  }
+
+  // === MÉTODO 2: API REST usando API Key del servidor ===
+  if (email === "not_found" && process.env.WHOP_API_KEY) {
+    try {
+      const res = await fetch(`https://api.whop.com/v2/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
+        },
+      });
+
+      console.log("[WHOP] Status respuesta REST:", res.status);
+
+      const data = await res.json();
+      console.log("[WHOP] Datos REST:", JSON.stringify(data, null, 2));
+
+      email = data?.email || "not_found";
+    } catch (err) {
+      console.error("[WHOP] Error al obtener email con API Key:", err);
     }
   }
 
-  // 7. Renderizar
   return (
     <div className="flex justify-center items-center h-screen px-8 text-white">
       <h1 className="text-xl text-center max-w-3xl">
