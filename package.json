@@ -1,3 +1,4 @@
+
 {
   "name": "codex-whop-app",
   "version": "1.0.0",
@@ -8,9 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@whop/api": "^1.0.4",
     "@whop/sdk": "git+https://github.com/whopio/whop-sdk.git",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "jsonwebtoken": "^9.0.0"
   }
-
 }
