@@ -28,7 +28,7 @@ app.post('/api/experience', async (req, res) => {
   const result = await fetch('https://api.whop.com/graphql', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.WHOP_API_KEY_APP}`,
+      'Authorization': `Bearer ${process.env.WHOP_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
