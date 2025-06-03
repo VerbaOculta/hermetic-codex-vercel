@@ -1,4 +1,3 @@
-// api/experience.js
 export default async function handler(req, res) {
   const experienceId = req.query.id;
 
@@ -41,9 +40,9 @@ export default async function handler(req, res) {
 
     const result = await response.json();
 
-    if (result.errors) {
-      console.error(result.errors);
-      return res.status(500).json({ error: "Failed to fetch experience" });
+    if (!result.data || !result.data.experience) {
+      console.error("Whop API error:", result.errors || result);
+      return res.status(404).json({ error: "Experience not found or invalid ID" });
     }
 
     res.status(200).json(result.data.experience);
