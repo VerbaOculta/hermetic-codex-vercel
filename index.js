@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/experiences/:experienceId', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/puerta-codex.html'));
+  res.sendFile(path.join(__dirname, 'public/portal.html'));
 });
 
 app.listen(PORT, () => {
