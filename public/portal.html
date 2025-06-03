@@ -2,46 +2,28 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Codex Hermético - Demo Whop</title>
-  <style>
-    body { background: #0d0d16; color: white; font-family: sans-serif; text-align: center; padding-top: 5rem; }
-    #userInfo { background: #1a1a2e; padding: 2rem; border-radius: 12px; max-width: 500px; margin: auto; }
-  </style>
+  <title>Codex Hermético</title>
 </head>
 <body>
-  <h1>✨ Bienvenido al Codex Hermético</h1>
-  <div id="userInfo">Cargando experiencia...</div>
+  <h1>Bienvenido al Codex Hermético</h1>
+  <p>ID de experiencia: <span id="id"></span></p>
+  <div id="info"></div>
 
   <script>
-    const path = window.location.pathname; // /experiences/exp_XXXXX
-    const experienceId = path.split('/').pop();
+    const experienceId = window.location.pathname.split("/").pop();
+    document.getElementById("id").innerText = experienceId;
 
-    fetch('/api/experience', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ experienceId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      const { user, id, status, customFields } = data;
-
-      const userInfo = `
-        <h2>🔍 Datos de tu experiencia</h2>
-        <p><strong>ID:</strong> ${id}</p>
-        <p><strong>Status:</strong> ${status}</p>
-        <p><strong>Usuario:</strong> ${user?.name || 'Sin nombre'} (${user?.email})</p>
-        <h3>🧩 Campos personalizados:</h3>
-        <ul>
-          ${(customFields || []).map(f => `<li><b>${f.key}</b>: ${f.value}</li>`).join('') || '<li>No hay campos.</li>'}
-        </ul>
-      `;
-
-      document.getElementById('userInfo').innerHTML = userInfo;
-    })
-    .catch(err => {
-      document.getElementById('userInfo').innerText = 'Error al cargar experiencia.';
-      console.error(err);
-    });
+    fetch(`/api/experience?experienceId=${experienceId}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("info").innerHTML = `
+          <p><strong>Nombre:</strong> ${data.membership.user.firstName || "Sin nombre"}</p>
+          <p><strong>Email:</strong> ${data.membership.user.email}</p>
+        `;
+      })
+      .catch(err => {
+        console.error("Error al obtener datos de Whop:", err);
+      });
   </script>
 </body>
 </html>
