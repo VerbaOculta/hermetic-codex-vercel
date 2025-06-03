@@ -1,54 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Codex Hermético</title>
-  <style>
-    body {
-      font-family: 'Georgia', serif;
-      background: #0b0c1e;
-      color: #f5f5f5;
-      padding: 2rem;
-      text-align: center;
-    }
-    .titulo {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-    .info {
-      font-size: 1.2rem;
-      margin-top: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="titulo">Bienvenido al Codex Hermético</div>
-  <div id="info" class="info">Cargando experiencia...</div>
+<script type="module">
+  import { createAppIframeSDK } from 'https://cdn.skypack.dev/@whop/sdk';
 
-  <script>
-    // Extraer el experienceId desde la URL (ej: /experiences/exp_12345)
-    const experienceId = window.location.pathname.split("/").pop();
+  const infoDiv = document.getElementById("info");
 
-    fetch(`/api/experience?id=${experienceId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const infoDiv = document.getElementById("info");
+  const sdk = createAppIframeSDK();
 
-        if (data.error) {
-          infoDiv.innerText = `Error: ${data.error}`;
-        } else {
-          infoDiv.innerHTML = `
-            <p><strong>Email:</strong> ${data.buyer?.email || 'No disponible'}</p>
-            <p><strong>Plan:</strong> ${data.plan?.name || 'Sin plan'}</p>
-            <p><strong>ID:</strong> ${data.id}</p>
-          `;
-        }
-      })
-      .catch((error) => {
-        document.getElementById("info").innerText = `Error general: ${error.message}`;
-      });
-  </script>
-</body>
-</html>
+  sdk.onReady(async () => {
+    const token = await sdk.getUserToken();
+    if (!token) {
+      infoDiv.innerText = "No se pudo obtener token Whop.";
+      return;
+    }
+
+    const res = await fetch('/api/experience', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      infoDiv.innerText = `Error: ${data.error}`;
+    } else {
+      infoDiv.innerHTML = `
+        <p><strong>ID:</strong> ${data.user?.id || 'Sin ID'}</p>
+        <p><strong>Email:</strong> ${data.user?.email || 'No disponible'}</p>
+        <p><strong>Username:</strong> ${data.user?.username || 'Desconocido'}</p>
+      `;
+    }
+  });
+</script>
