@@ -9,10 +9,7 @@
   },
   "dependencies": {
     "@whop/api": "^1.1.0",
-    "@whop/sdk": "git+https://github.com/whopio/whop-sdk.git"
-  },
-  "devDependencies": {
-    "vite": "^5.0.0",
-    "@whop-apps/dev-proxy": "^1.0.1"
+    "@whop/sdk": "git+https://github.com/whopio/whop-sdk.git",
+    "vite": "^5.0.0"
   }
 }
