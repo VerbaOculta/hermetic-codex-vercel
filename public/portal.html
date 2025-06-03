@@ -2,41 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Codex Hermético Embebido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Codex Hermético (Whop)</title>
   <style>
-    body { background: #0e0e1a; color: white; font-family: Georgia, serif; padding: 2rem; }
-    #info { margin-top: 2rem; font-size: 1.1rem; }
+    body {
+      font-family: 'Georgia', serif;
+      background: #0b0c1e;
+      color: #f5f5f5;
+      padding: 2rem;
+      text-align: center;
+    }
+    .titulo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .info {
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
-  <h1>Codex Hermético</h1>
-  <div id="info">Cargando datos del usuario...</div>
+  <div class="titulo">Codex Hermético Embebido</div>
+  <div id="info" class="info">Cargando experiencia...</div>
 
   <script>
-    async function obtenerDatos() {
-      const token = window.whopJwt;
-      if (!token) {
-        document.getElementById("info").innerText = "No se encontró el token JWT de Whop.";
-        return;
-      }
+    const experienceId = window.location.pathname.split("/").pop();
+    const jwt = window.whopJwt;
 
-      try {
-        const res = await fetch("/api/experience", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ appId: "WHOP_APP_ID_AQUI" })
-        });
-        const data = await res.json();
+    if (!jwt) {
+      document.getElementById("info").innerText = "JWT no disponible (no se cargó embebido en Whop)";
+    } else {
+      fetch('/api/experience', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        },
+        body: JSON.stringify({ experienceId })
+      })
+      .then(res => res.json())
+      .then(data => {
         document.getElementById("info").innerText = JSON.stringify(data, null, 2);
-      } catch (err) {
-        document.getElementById("info").innerText = "Error al obtener experiencia: " + err.message;
-      }
+      })
+      .catch(err => {
+        document.getElementById("info").innerText = "Error al cargar datos: " + err.message;
+      });
     }
-
-    obtenerDatos();
   </script>
 </body>
 </html>
