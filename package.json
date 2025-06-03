@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@whop/api": "^1.1.0",
+    "@whop/api": "^1.0.5",
     "@whop/sdk": "git+https://github.com/whopio/whop-sdk.git",
     "vite": "^5.0.0"
   }
