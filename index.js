@@ -11,22 +11,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/experiences/:experienceId', (req, res) => {
-  const { experienceId } = req.params;
-
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Hermetic Codex Experience</title>
-      <meta charset="UTF-8" />
-      <link rel="stylesheet" href="/style.css" />
-    </head>
-    <body>
-      <h1>Bienvenido al Codex Hermético</h1>
-      <p>ID de experiencia: <strong>${experienceId}</strong></p>
-    </body>
-    </html>
-  `);
+  res.sendFile(path.join(__dirname, 'public/puerta-codex.html'));
 });
 
 app.listen(PORT, () => {
