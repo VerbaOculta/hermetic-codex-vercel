@@ -1,42 +1,15 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Hermetic Codex</title>
-  <link rel="stylesheet" href="/style.css" />
-</head>
-<body>
-  <h1>Bienvenido al Codex Hermético</h1>
-  <div id="info">Cargando experiencia...</div>
+const experienceId = window.location.pathname.split("/").pop();
 
-  <script>
-    async function getExperienceData() {
-      const pathParts = window.location.pathname.split("/");
-      const experienceId = pathParts[pathParts.length - 1];
-
-      try {
-        const res = await fetch(`/api/experience?id=${experienceId}`);
-        const data = await res.json();
-
-        if (data.error) {
-          document.getElementById("info").innerText = "Error: " + data.error;
-        } else {
-          document.getElementById("info").innerHTML = `
-            <p><strong>ID:</strong> ${data.id}</p>
-            <p><strong>Nombre:</strong> ${data.buyer?.name || "N/A"}</p>
-            <p><strong>Email:</strong> ${data.buyer?.email}</p>
-            <p><strong>Plan:</strong> ${data.plan?.name}</p>
-            <p><strong>Inicio:</strong> ${new Date(data.created_at).toLocaleString()}</p>
-            <p><strong>Expira:</strong> ${new Date(data.expires_at).toLocaleString()}</p>
-          `;
-        }
-      } catch (e) {
-        document.getElementById("info").innerText = "Error al cargar los datos.";
-        console.error(e);
-      }
+fetch(`/api/experience?id=${experienceId}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById("info").innerText = `Error: ${data.error}`;
+    } else {
+      document.getElementById("info").innerText =
+        `Comprador: ${data.buyer.email} – Plan: ${data.plan.name}`;
     }
-
-    getExperienceData();
-  </script>
-</body>
-</html>
+  })
+  .catch(err => {
+    document.getElementById("info").innerText = `Error general: ${err.message}`;
+  });
