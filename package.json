@@ -2,8 +2,10 @@
   "name": "codex-whop-app",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "node-fetch": "^3.3.2"
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build"
   },
-  "packageManager": "pnpm@10.11.1"
+  "dependencies": {},
+  "devDependencies": {}
 }
