@@ -8,6 +8,13 @@ export default async function ExperiencePage({
   params: Promise<{ experienceId: string }>;
 }) {
   const headersList = await headers();
+
+  // [1] LOG TODOS LOS HEADERS PARA DEPURACIÓN
+  for (const [key, value] of headersList.entries()) {
+    console.log(`[HEADER] ${key}: ${value}`);
+  }
+
+  // [2] Intentamos capturar el token como normalmente se haría
   const authHeader = headersList.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
 
@@ -23,7 +30,7 @@ export default async function ExperiencePage({
   const experience = (await whopApi.getExperience({ experienceId })).experience;
   const { accessLevel } = result.hasAccessToExperience;
 
-  // === MÉTODO 1: GRAPHQL con token del usuario ===
+  // === MÉTODO 1: GRAPHQL con token de usuario ===
   let email = "not_found";
 
   if (token) {
@@ -52,7 +59,6 @@ export default async function ExperiencePage({
       });
 
       console.log("[WHOP] Status respuesta GraphQL:", res.status);
-
       const data = await res.json();
       console.log("[WHOP] Datos GraphQL:", JSON.stringify(data, null, 2));
 
@@ -64,7 +70,7 @@ export default async function ExperiencePage({
     console.warn("[WHOP] Token de usuario no encontrado en headers.");
   }
 
-  // === MÉTODO 2: API REST usando API Key del servidor ===
+  // === MÉTODO 2: API REST con API Key (fallback) ===
   if (email === "not_found" && process.env.WHOP_API_KEY) {
     try {
       const res = await fetch(`https://api.whop.com/v2/users/${userId}`, {
@@ -74,7 +80,6 @@ export default async function ExperiencePage({
       });
 
       console.log("[WHOP] Status respuesta REST:", res.status);
-
       const data = await res.json();
       console.log("[WHOP] Datos REST:", JSON.stringify(data, null, 2));
 
