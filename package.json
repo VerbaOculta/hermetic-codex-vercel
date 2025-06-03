@@ -17,9 +17,7 @@
 		"@whop/api": "^0.0.21",
 		"next": "15.3.2",
 		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"jsonwebtoken": "^9.0.2",
-		"@types/jsonwebtoken": "^9.0.2"
+		"react-dom": "^19.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
