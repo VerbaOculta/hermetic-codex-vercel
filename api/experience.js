@@ -1,18 +1,21 @@
-import { makeUserTokenVerifier } from '@whop/api';
-
-const verifier = makeUserTokenVerifier(process.env.WHOP_APP_SECRET);
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
-  const { token } = req.body;
-  if (!token) return res.status(400).json({ error: 'Falta el token' });
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No se envió token' });
+  }
+
+  const token = auth.split(' ')[1];
 
   try {
-    const user = await verifier(token);
-    return res.status(200).json({ user });
+    const decoded = jwt.decode(token, { complete: true });
+    return res.status(200).json({ message: 'Token recibido y decodificado', decoded });
   } catch (err) {
-    console.error('❌ Error al verificar JWT:', err);
-    return res.status(401).json({ error: 'Token inválido o expirado' });
+    return res.status(400).json({ error: 'Token inválido', details: err.message });
   }
 }
