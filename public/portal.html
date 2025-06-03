@@ -1,15 +1,54 @@
-const experienceId = window.location.pathname.split("/").pop();
-
-fetch(`/api/experience?id=${experienceId}`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("info").innerText = `Error: ${data.error}`;
-    } else {
-      document.getElementById("info").innerText =
-        `Comprador: ${data.buyer.email} – Plan: ${data.plan.name}`;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Codex Hermético</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: #0b0c1e;
+      color: #f5f5f5;
+      padding: 2rem;
+      text-align: center;
     }
-  })
-  .catch(err => {
-    document.getElementById("info").innerText = `Error general: ${err.message}`;
-  });
+    .titulo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .info {
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="titulo">Bienvenido al Codex Hermético</div>
+  <div id="info" class="info">Cargando experiencia...</div>
+
+  <script>
+    // Extraer el experienceId desde la URL (ej: /experiences/exp_12345)
+    const experienceId = window.location.pathname.split("/").pop();
+
+    fetch(`/api/experience?id=${experienceId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const infoDiv = document.getElementById("info");
+
+        if (data.error) {
+          infoDiv.innerText = `Error: ${data.error}`;
+        } else {
+          infoDiv.innerHTML = `
+            <p><strong>Email:</strong> ${data.buyer?.email || 'No disponible'}</p>
+            <p><strong>Plan:</strong> ${data.plan?.name || 'Sin plan'}</p>
+            <p><strong>ID:</strong> ${data.id}</p>
+          `;
+        }
+      })
+      .catch((error) => {
+        document.getElementById("info").innerText = `Error general: ${error.message}`;
+      });
+  </script>
+</body>
+</html>
