@@ -1,35 +1,53 @@
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+'use client';
 
-export default async function MePage() {
-  const allCookies = cookies();
-  const jwtToken = allCookies.get("whop_jwt")?.value;
+import { useEffect, useState } from 'react';
+import jwt from 'jsonwebtoken';
 
-  if (!jwtToken) {
+export default function MePage() {
+  const [decoded, setDecoded] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const jwtToken = getCookie('whop_jwt');
+    if (!jwtToken) {
+      setError('No se encontró el JWT');
+      return;
+    }
+
+    try {
+      const data = jwt.decode(jwtToken);
+      setDecoded(data);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }, []);
+
+  function getCookie(name: string): string | null {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+
+  if (error) {
     return (
-      <main style={{ padding: "2rem" }}>
-        <h1>No se encontró el JWT</h1>
-        <p>Asegúrate de que estás accediendo desde una experiencia embebida en Whop.</p>
+      <main style={{ padding: '2rem' }}>
+        <h1>Error</h1>
+        <p>{error}</p>
       </main>
     );
   }
 
-  let decoded = null;
-  try {
-    decoded = jwt.decode(jwtToken);
-  } catch (err: any) {
+  if (!decoded) {
     return (
-      <main style={{ padding: "2rem" }}>
-        <h1>Error al decodificar JWT</h1>
-        <p>{err.message}</p>
+      <main style={{ padding: '2rem' }}>
+        <p>Cargando...</p>
       </main>
     );
   }
 
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>Datos del Usuario (desde JWT en Cookie)</h1>
-      <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+    <main style={{ padding: '2rem' }}>
+      <h1>Datos del Usuario (desde JWT)</h1>
+      <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
         {JSON.stringify(decoded, null, 2)}
       </pre>
     </main>
