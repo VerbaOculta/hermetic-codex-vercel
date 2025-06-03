@@ -2,20 +2,21 @@ import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'No se envió token' });
-  }
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
 
-  const token = auth.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Missing JWT' });
+  }
 
   try {
     const decoded = jwt.decode(token, { complete: true });
-    return res.status(200).json({ message: 'Token recibido y decodificado', decoded });
+    return res.status(200).json({ decoded });
   } catch (err) {
-    return res.status(400).json({ error: 'Token inválido', details: err.message });
+    console.error('JWT decode error:', err);
+    return res.status(500).json({ error: 'Failed to decode JWT' });
   }
 }
