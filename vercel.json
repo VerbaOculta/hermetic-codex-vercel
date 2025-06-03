@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/experiences/:experienceId",
-      "destination": "/index.html"
-    }
-  ]
-}
