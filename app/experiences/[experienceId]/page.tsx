@@ -43,6 +43,7 @@ export default async function ExperiencePage({
         <br />
         Your user ID is <strong>{userId}</strong> and your username is{" "}
         <strong>@{user.username}</strong>.<br />
+        <strong>@{user.email}</strong>.<br />
         <br />
         You are viewing the experience: <strong>{experience.name}</strong>
       </h1>
