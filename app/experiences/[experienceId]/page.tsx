@@ -21,7 +21,7 @@ export default async function ExperiencePage({
   });
 
   // 4. Obtener datos privados del usuario (incluye email)
-  const user = (await whopApi.getUserPrivate({ userId })).user;
+  const user = (await whopApi.getUser({ userId })).user;
 
   // 5. Obtener detalles de la experiencia
   const experience = (await whopApi.getExperience({ experienceId })).experience;
