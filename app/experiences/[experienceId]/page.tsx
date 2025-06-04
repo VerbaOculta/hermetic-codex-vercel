@@ -1,6 +1,8 @@
 import { whopApi } from "@/lib/whop-api";
 import { verifyUserToken } from "@whop/api";
 import { headers } from "next/headers";
+import { promises as fs } from "fs";
+import path from "path";
 
 export default async function ExperiencePage({
   params,
@@ -50,23 +52,20 @@ export default async function ExperiencePage({
     console.warn("[WHOP] WHOP_API_KEY no está definida en el entorno.");
   }
 
-  // [4] Render final
-  return (
-    <div className="flex justify-center items-center h-screen px-8 text-white">
-      <h1 className="text-xl text-center max-w-3xl">
-        Hi <strong>{user.name}</strong>, you{" "}
-        <strong>
-          {result.hasAccessToExperience.hasAccess ? "have" : "do not have"} access
-        </strong>{" "}
-        to this experience. Your access level to this whop is:{" "}
-        <strong>{accessLevel}</strong>.<br />
-        <br />
-        Your user ID is <strong>{userId}</strong><br />
-        Your username is <strong>@{user.username}</strong><br />
-        Your email is <strong>{email}</strong><br />
-        <br />
-        You are viewing the experience: <strong>{experience.name}</strong>
-      </h1>
-    </div>
-  );
+  // [4] Cargar y renderizar portal.html
+  const filePath = path.join(process.cwd(), "templates", "portal.html");
+  let html = await fs.readFile(filePath, "utf8");
+
+  html = html
+    .replace("{{name}}", user.name || "Seeker")
+    .replace("{{email}}", email || "not_found")
+    .replace("{{username}}", user.username || "unknown")
+    .replace("{{experience}}", experience.name || "Unknown Experience")
+    .replace("{{accessLevel}}", accessLevel || "unknown");
+
+  return new Response(html, {
+    headers: {
+      "Content-Type": "text/html",
+    },
+  });
 }
