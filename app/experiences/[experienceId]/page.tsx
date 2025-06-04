@@ -18,10 +18,11 @@ export default async function ExperiencePage({
     input: {
       userIds: [userId],
       experienceId,
+      senderUserId: userId, // <- IMPORTANTE
       title: "✨ El Codex Hermético te espera",
-      subtitle: "Accede ahora a tu experiencia personalizada",
-      content: "Tu portal personal ha sido activado. Haz clic para comenzar.",
-      link: "/puerta-codex" // cambia según la ruta real
+      subtitle: "Tu portal ha sido activado",
+      content: "Haz clic para comenzar tu viaje simbólico.",
+      link: "/puerta-codex"
     }
   });
 
