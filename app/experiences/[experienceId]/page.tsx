@@ -14,7 +14,7 @@ export default async function ExperiencePage({
   const { userId } = await verifyUserToken(headersList);
 
   // Enviar notificación dentro del ecosistema Whop
-  await whopi.sendPushNotification({
+  await whopApi.sendPushNotification({
     userId,
     title: "✨ El Codex Hermético te espera",
     body: "Tu portal personal ha sido activado. Haz clic para comenzar.",
