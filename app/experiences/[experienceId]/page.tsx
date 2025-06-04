@@ -47,6 +47,11 @@ export default async function ExperiencePage({
   const experience = (await whopApi.getExperience({ experienceId })).experience;
   const { accessLevel } = result.hasAccessToExperience;
 
+ // Accede al correo electrónico del usuario
+  const userEmail = user.email; // El campo 'email' está disponible en el objeto 'user' [1, 2]
+  console.log("[userEmail]:", userEmail);
+
+  
   // Obtener email vía API REST (requiere WHOP_API_KEY)
   let email = "not_found";
 
