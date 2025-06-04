@@ -15,13 +15,12 @@ export default async function ExperiencePage({
 
   // Enviar notificación dentro del ecosistema Whop
   await whopApi.sendPushNotification({
-    input: {
-      user_id: userId,
-      title: "✨ El Codex Hermético te espera",
-      body: "Tu portal personal ha sido activado. Haz clic para comenzar.",
-      link: "/puerta-codex", // cambia esto si tienes una ruta específica
-    },
+    userId,
+    title: "✨ El Codex Hermético te espera",
+    body: "Tu portal personal ha sido activado. Haz clic para comenzar.",
+    link: "/puerta-codex",
   });
+
 
   const result = await whopApi.checkIfUserHasAccessToExperience({
     userId,
