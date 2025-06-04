@@ -11,12 +11,11 @@ export default async function ExperiencePage({
 }) {
   const headersList = await headers();
 
-  // [1] Mostrar todos los headers para debugging
+  // Mostrar todos los headers para depuración
   for (const [key, value] of headersList.entries()) {
     console.log(`[HEADER] ${key}: ${value}`);
   }
 
-  // [2] Obtener experiencia y userId
   const { experienceId } = await params;
   const { userId } = await verifyUserToken(headersList);
 
@@ -29,7 +28,7 @@ export default async function ExperiencePage({
   const experience = (await whopApi.getExperience({ experienceId })).experience;
   const { accessLevel } = result.hasAccessToExperience;
 
-  // [3] Intentamos obtener el email vía API REST (requiere WHOP_API_KEY)
+  // Obtener email vía API REST (requiere WHOP_API_KEY)
   let email = "not_found";
 
   if (process.env.WHOP_API_KEY) {
@@ -40,32 +39,28 @@ export default async function ExperiencePage({
         },
       });
 
-      console.log("[WHOP] Status respuesta REST:", res.status);
       const data = await res.json();
-      console.log("[WHOP] Datos REST:", JSON.stringify(data, null, 2));
-
       email = data?.email || "not_found";
     } catch (err) {
       console.error("[WHOP] Error al obtener email con API Key:", err);
     }
-  } else {
-    console.warn("[WHOP] WHOP_API_KEY no está definida en el entorno.");
   }
 
-  // [4] Cargar y renderizar portal.html
-  const filePath = path.join(process.cwd(), "templates", "portal.html");
-  let html = await fs.readFile(filePath, "utf8");
+  // === Leer y preparar HTML base ===
+  const templatePath = path.join(process.cwd(), "templates", "portal.html");
+  let htmlTemplate = await fs.readFile(templatePath, "utf8");
 
-  html = html
-    .replace("{{name}}", user.name || "Seeker")
-    .replace("{{email}}", email || "not_found")
-    .replace("{{username}}", user.username || "unknown")
-    .replace("{{experience}}", experience.name || "Unknown Experience")
-    .replace("{{accessLevel}}", accessLevel || "unknown");
+  // Reemplazar los placeholders
+  const finalHTML = htmlTemplate
+    .replace("{{name}}", user.name || "")
+    .replace("{{email}}", email)
+    .replace("{{username}}", user.username || "")
+    .replace("{{experience}}", experience.name || "")
+    .replace("{{accessLevel}}", accessLevel || "");
 
-  return new Response(html, {
-    headers: {
-      "Content-Type": "text/html",
-    },
-  });
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: finalHTML }}
+    />
+  );
 }
