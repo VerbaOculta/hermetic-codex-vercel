@@ -49,6 +49,8 @@ export default async function ExperiencePage({
     };
 
     try {
+
+      
       const res = await fetch("https://api.whop.com/graphql", {
         method: "POST",
         headers: {
@@ -70,10 +72,11 @@ export default async function ExperiencePage({
     console.warn("[WHOP] Token de usuario no encontrado en headers.");
   }
 
+  
   // === MÉTODO 2: API REST con API Key (fallback) ===
   if (email === "not_found" && process.env.WHOP_API_KEY_V2) {
     try {
-      const res = await fetch(`https://api.whop.com/v2/users/${userId}`, {
+      const res = await fetch(`https://api.whop.com/v5/app/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${process.env.WHOP_API_KEY_V2}`,
         },
