@@ -74,11 +74,11 @@ export default async function ExperiencePage({
 
   
   // === MÉTODO 2: API REST con API Key (fallback) ===
-  if (email === "not_found" && process.env.WHOP_API_KEY_V2) {
+  if (email === "not_found" && process.env.WHOP_API_KEY) {
     try {
       const res = await fetch(`https://api.whop.com/v5/app/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${process.env.WHOP_API_KEY_V2}`,
+          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
         },
       });
 
