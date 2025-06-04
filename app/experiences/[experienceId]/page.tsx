@@ -1,5 +1,5 @@
 import { whopApi } from "@/lib/whop-api";
-import { verifyUserToken, whopi } from "@whop/api";
+import { verifyUserToken } from "@whop/api";
 import { headers } from "next/headers";
 import { promises as fs } from "fs";
 import path from "path";
