@@ -14,17 +14,25 @@ export default async function ExperiencePage({
   const { userId } = await verifyUserToken(headersList);
 
   // Enviar notificación dentro del ecosistema Whop
-  await whopApi.sendPushNotification({
-    input: {
-      userIds: [userId],
-      experienceId,
-      senderUserId: userId, // <- IMPORTANTE
-      title: "✨ El Codex Hermético te espera",
-      subtitle: "Tu portal ha sido activado",
-      content: "Haz clic para comenzar tu viaje simbólico.",
-      link: "/puerta-codex"
-    }
-  });
+  try {
+    console.log("[WHOP] Enviando push notification...");
+  
+    const result = await whopApi.sendPushNotification({
+      input: {
+        userIds: [userId],
+        experienceId,
+        senderUserId: userId, // IMPORTANTE: necesario para que se envíe correctamente
+        title: "✨ El Codex Hermético te espera",
+        subtitle: "Tu portal ha sido activado",
+        content: "Haz clic para comenzar tu viaje simbólico.",
+        link: "/puerta-codex"
+      }
+    });
+  
+    console.log("[WHOP] Resultado notificación:", JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("[WHOP] Error al enviar notificación:", error);
+  }
 
 
   const result = await whopApi.checkIfUserHasAccessToExperience({
