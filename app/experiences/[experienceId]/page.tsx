@@ -25,7 +25,8 @@ export default async function ExperiencePage({
         title: "✨ El Codex Hermético te espera",
         subtitle: "Tu portal ha sido activado",
         content: "Haz clic para comenzar tu viaje simbólico.",
-        link: "/puerta-codex"
+        link: "/puerta-codex",
+        isMention: true
       }
     });
   
