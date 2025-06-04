@@ -10,12 +10,6 @@ export default async function ExperiencePage({
   params: Promise<{ experienceId: string }>;
 }) {
   const headersList = await headers();
-
-  // Mostrar todos los headers para depuración
-  for (const [key, value] of headersList.entries()) {
-    console.log(`[HEADER] ${key}: ${value}`);
-  }
-
   const { experienceId } = await params;
   const { userId } = await verifyUserToken(headersList);
 
