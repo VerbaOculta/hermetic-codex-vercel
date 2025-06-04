@@ -1,5 +1,5 @@
 import { whopApi } from "@/lib/whop-api";
-import { verifyUserToken } from "@whop/api";
+import { verifyUserToken, whopi } from "@whop/api";
 import { headers } from "next/headers";
 import { promises as fs } from "fs";
 import path from "path";
@@ -12,6 +12,14 @@ export default async function ExperiencePage({
   const headersList = await headers();
   const { experienceId } = await params;
   const { userId } = await verifyUserToken(headersList);
+
+  // Enviar notificación dentro del ecosistema Whop
+  await whopi.sendPushNotification({
+    userId,
+    title: "✨ El Codex Hermético te espera",
+    body: "Tu portal personal ha sido activado. Haz clic para comenzar.",
+    link: "/puerta-codex", // puedes cambiar esta ruta si lo deseas
+  });
 
   const result = await whopApi.checkIfUserHasAccessToExperience({
     userId,
@@ -42,7 +50,7 @@ export default async function ExperiencePage({
 
   // === Leer y preparar HTML base ===
   const templatePath = path.join(process.cwd(), "templates", "portal.html");
-  let htmlTemplate = await fs.readFile(templatePath, "utf8");
+  const htmlTemplate = await fs.readFile(templatePath, "utf8");
 
   // Reemplazar los placeholders
   const finalHTML = htmlTemplate
