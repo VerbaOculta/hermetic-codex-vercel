@@ -1,42 +1,20 @@
 import { whopApi } from "@/lib/whop-api";
 import { verifyUserToken } from "@whop/api";
 import { headers } from "next/headers";
-import { promises as fs } from "fs";
-import path from "path";
 
 export default async function ExperiencePage({
   params,
 }: {
   params: Promise<{ experienceId: string }>;
 }) {
+  // The headers contains the user token
   const headersList = await headers();
-  const { experienceId } = await params;
-  const { userId } = await verifyUserToken(headersList);
 
-  // Enviar notificación dentro del ecosistema Whop
-  /*
-  try {
-    const payload = {
-      input: {
-        userIds: [userId],
-        experienceId,
-        senderUserId: userId, // este campo es obligatorio
-        title: "✨ El Codex Hermético te espera",
-        subtitle: "Tu portal ha sido activado",
-        content: "Haz clic para comenzar tu viaje simbólico.",
-        link: "/puerta-codex"
-      }
-    };
-  
-    console.log("[WHOP] Payload a enviar:", JSON.stringify(payload, null, 2));
-  
-    const result = await whopApi.sendPushNotification(payload);
-  
-    console.log("[WHOP] Resultado de la notificación:", JSON.stringify(result, null, 2));
-  } catch (error) {
-    console.error("[WHOP] Error al enviar notificación:", error);
-  }
-  */
+  // The experienceId is a path param
+  const { experienceId } = await params;
+
+  // The user token is in the headers
+  const { userId } = await verifyUserToken(headersList);
 
   const result = await whopApi.checkIfUserHasAccessToExperience({
     userId,
@@ -45,39 +23,29 @@ export default async function ExperiencePage({
 
   const user = (await whopApi.getUser({ userId })).publicUser;
   const experience = (await whopApi.getExperience({ experienceId })).experience;
+
+  // Either: 'admin' | 'customer' | 'no_access';
+  // 'admin' means the user is an admin of the whop, such as an owner or moderator
+  // 'customer' means the user is a common member in this whop
+  // 'no_access' means the user does not have access to the whop
   const { accessLevel } = result.hasAccessToExperience;
 
-  // Obtener email vía API REST (requiere WHOP_API_KEY)
-  let email = "not_found";
-
-  if (process.env.WHOP_API_KEY) {
-    try {
-      const res = await fetch(`https://api.whop.com/v5/app/users/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
-        },
-      });
-
-      const data = await res.json();
-      email = data?.email || "not_found";
-    } catch (err) {
-      console.error("[WHOP] Error al obtener email con API Key:", err);
-    }
-  }
-
-  // === Leer y preparar HTML base ===
-  const templatePath = path.join(process.cwd(), "templates", "portal.html");
-  const htmlTemplate = await fs.readFile(templatePath, "utf8");
-
-  // Reemplazar los placeholders
-  const finalHTML = htmlTemplate
-    .replace("{{name}}", user.name || "")
-    .replace("{{email}}", email)
-    .replace("{{username}}", user.username || "")
-    .replace("{{experience}}", experience.name || "")
-    .replace("{{accessLevel}}", accessLevel || "")
-    .replace("{{userId}}", userId || "");
   return (
-    <div dangerouslySetInnerHTML={{ __html: finalHTML }} />
+    <div className="flex justify-center items-center h-screen px-8">
+      <h1 className="text-xl">
+        Hi <strong>{user.name}</strong>, you{" "}
+        <strong>
+          {result.hasAccessToExperience.hasAccess ? "have" : "do not have"}{" "}
+          access
+        </strong>{" "}
+        to this experience. Your access level to this whop is:{" "}
+        <strong>{accessLevel}</strong>. <br />
+        <br />
+        Your user ID is <strong>{userId}</strong> and your username is{" "}
+        <strong>@{user.username}</strong>.<br />
+        <br />
+        You are viewing the experience: <strong>{experience.name}</strong>
+      </h1>
+    </div>
   );
 }
