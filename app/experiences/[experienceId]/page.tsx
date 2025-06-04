@@ -14,6 +14,7 @@ export default async function ExperiencePage({
   const { userId } = await verifyUserToken(headersList);
 
   // Enviar notificación dentro del ecosistema Whop
+  /*
   try {
     const payload = {
       input: {
@@ -35,7 +36,7 @@ export default async function ExperiencePage({
   } catch (error) {
     console.error("[WHOP] Error al enviar notificación:", error);
   }
-
+  */
 
   const result = await whopApi.checkIfUserHasAccessToExperience({
     userId,
