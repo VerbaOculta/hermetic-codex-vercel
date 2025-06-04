@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hermetic Codex Portal</title>
-    <style>
-      body {
-        background: #111;
-        color: #fff;
-        font-family: serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 2rem;
-        text-align: center;
-      }
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-      }
-      p {
-        font-size: 1.25rem;
-        opacity: 0.8;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Welcome, {{name}}</h1>
-    <p>Your soul's vibration echoes through <strong>{{email}}</strong></p>
-    <p>The portal is now open.</p>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Portal Hermético</title>
+  <style>
+    body {
+      background: #0e0e0e;
+      color: #f5f5f5;
+      font-family: 'Georgia', serif;
+      padding: 4rem;
+      text-align: center;
+    }
+    .nombre { color: gold; font-size: 2rem; }
+  </style>
+</head>
+<body>
+  <h1 class="nombre">Bienvenido, {{name}}</h1>
+  <p>Tu email: <strong>{{email}}</strong></p>
+  <p>Tu usuario Whop: <strong>@{{username}}</strong></p>
+  <p>Estás accediendo a: <strong>{{experience}}</strong></p>
+  <p>Nivel de acceso: <strong>{{accessLevel}}</strong></p>
+
+  <hr />
+
+  <!-- Aquí continúa tu experiencia interactiva -->
+  <div id="codex-root">
+    <!-- Tu UI React, JS embebido, o lo que quieras -->
+  </div>
+</body>
 </html>
