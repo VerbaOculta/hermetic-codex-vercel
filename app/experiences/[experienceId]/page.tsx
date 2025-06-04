@@ -9,14 +9,12 @@ export default async function ExperiencePage({
 }) {
   const headersList = await headers();
 
-  // [1] LOG TODOS LOS HEADERS PARA DEPURACIÓN
+  // [1] Mostrar todos los headers para debugging
   for (const [key, value] of headersList.entries()) {
     console.log(`[HEADER] ${key}: ${value}`);
   }
 
-  // [2] CORRECTO: Obtener token desde 'x-whop-user-token'
-  const token = headersList.get("x-whop-user-token");
-
+  // [2] Obtener experiencia y userId
   const { experienceId } = await params;
   const { userId } = await verifyUserToken(headersList);
 
@@ -29,46 +27,30 @@ export default async function ExperiencePage({
   const experience = (await whopApi.getExperience({ experienceId })).experience;
   const { accessLevel } = result.hasAccessToExperience;
 
-  // === MÉTODO 1: GRAPHQL usando el token correcto ===
+  // [3] Intentamos obtener el email vía API REST (requiere WHOP_API_KEY)
   let email = "not_found";
 
-  if (token) {
-    console.log("[WHOP] Token de usuario (x-whop-user-token):", token);
-
-    const gqlQuery = {
-      query: `
-        query {
-          viewer {
-            user {
-              email
-            }
-          }
-        }
-      `,
-    };
-
+  if (process.env.WHOP_API_KEY) {
     try {
-      const res = await fetch("https://api.whop.com/graphql", {
-        method: "POST",
+      const res = await fetch(`https://api.whop.com/v5/app/users/${userId}`, {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
         },
-        body: JSON.stringify(gqlQuery),
       });
 
-      console.log("[WHOP] Status respuesta GraphQL:", res.status);
+      console.log("[WHOP] Status respuesta REST:", res.status);
       const data = await res.json();
-      console.log("[WHOP] Datos GraphQL:", JSON.stringify(data, null, 2));
+      console.log("[WHOP] Datos REST:", JSON.stringify(data, null, 2));
 
-      email = data?.data?.viewer?.user?.email || "not_found";
+      email = data?.email || "not_found";
     } catch (err) {
-      console.error("[WHOP] Error en GraphQL con token:", err);
+      console.error("[WHOP] Error al obtener email con API Key:", err);
     }
   } else {
-    console.warn("[WHOP] No se encontró 'x-whop-user-token' en headers.");
+    console.warn("[WHOP] WHOP_API_KEY no está definida en el entorno.");
   }
 
+  // [4] Render final
   return (
     <div className="flex justify-center items-center h-screen px-8 text-white">
       <h1 className="text-xl text-center max-w-3xl">
