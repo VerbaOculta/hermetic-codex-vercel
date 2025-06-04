@@ -75,8 +75,8 @@ export default async function ExperiencePage({
     .replace("{{email}}", email)
     .replace("{{username}}", user.username || "")
     .replace("{{experience}}", experience.name || "")
-    .replace("{{accessLevel}}", accessLevel || "");
-
+    .replace("{{accessLevel}}", accessLevel || "")
+    .replace("{{userId}}", userId || "");
   return (
     <div dangerouslySetInnerHTML={{ __html: finalHTML }} />
   );
